@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Crack today's three hidden unlock patterns in six tries each.">
+  <title>Daily Pattern Lock</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <button class="icon-btn" id="help-btn" aria-label="How to play">?</button>
+    <h1>Pattern Lock <span id="puzzle-no"></span></h1>
+    <div class="top-actions">
+      <button class="icon-btn" id="archive-btn" aria-label="Past puzzles">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M4 10h16M9 3v4M15 3v4" /></svg>
+      </button>
+      <button class="icon-btn" id="stats-btn" aria-label="Statistics">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="archive-banner" id="archive-banner" hidden>
+    <span>Past puzzle · <strong id="archive-banner-date"></strong></span>
+    <a id="archive-banner-today">Back to today</a>
+  </div>
+
+  <nav class="locks" id="locks" aria-label="Today's locks"></nav>
+
+  <main id="play">
+    <div class="status">
+      <span id="lock-info"></span>
+      <span id="attempts"></span>
+    </div>
+
+    <div class="board">
+      <svg id="grid" class="grid" viewBox="0 0 100 100" role="img" aria-label="Pattern grid"></svg>
+      <div class="thumbs" id="thumbs" aria-label="Past guesses"></div>
+    </div>
+
+    <ul class="legend" aria-label="Color key">
+      <li><span class="key key-g"></span>Right step</li>
+      <li><span class="key key-y"></span>Wrong step</li>
+      <li><span class="key key-x"></span>Not in pattern</li>
+    </ul>
+
+    <p class="msg" id="msg" aria-live="polite"></p>
+
+    <div class="lock-end" id="lock-end" hidden>
+      <button class="primary" id="next-btn"></button>
+    </div>
+
+    <section class="hints">
+      <h2>Hints</h2>
+      <ol id="hints"></ol>
+    </section>
+  </main>
+
+  <main id="result" hidden>
+    <h2 class="result-title" id="result-title"></h2>
+    <div class="result-locks" id="result-locks"></div>
+    <button class="primary" id="share-btn">Share result</button>
+    <p class="countdown" id="countdown-row">Next puzzle in <strong id="countdown"></strong></p>
+    <p class="fine" id="archive-actions" hidden>Past puzzles don't count toward your stats or streak.</p>
+    <div class="result-actions">
+      <button class="secondary" id="result-archive-btn">Past puzzles</button>
+      <button class="secondary" id="result-stats-btn">Statistics</button>
+    </div>
+    <p><a class="today-link" id="result-today-btn">Back to today's puzzle</a></p>
+  </main>
+
+  <dialog id="help">
+    <form method="dialog"><button class="close" aria-label="Close">×</button></form>
+    <h2>How to play</h2>
+    <p>Crack today's three hidden unlock patterns. Each lock gives you <strong>6 attempts</strong>.</p>
+    <ul>
+      <li>Drag across the dots to draw a pattern. Dots are used once, and a line passing over an unused dot picks it up.</li>
+      <li>Order matters: 1→2→5 and 5→2→1 are different patterns.</li>
+      <li>You know the number of dots. A guess of the wrong length doesn't cost an attempt.</li>
+      <li>After each miss you get a new hint, and they get more specific as you go.</li>
+    </ul>
+    <h3>Example</h3>
+    <p>The answer is 1→2→5→8→9 and you draw 1→5→9→8→7:</p>
+    <div class="example">
+      <svg id="example-grid" class="grid small-grid" viewBox="0 0 100 100" aria-hidden="true"></svg>
+      <ul class="legend legend-col">
+        <li><span class="key key-g"></span>1 and 8 are at the right step</li>
+        <li><span class="key key-y"></span>5 and 9 are in the pattern, at another step</li>
+        <li><span class="key key-x"></span>7 is not in the pattern</li>
+      </ul>
+    </div>
+    <p class="fine">A new puzzle arrives at midnight. Everyone gets the same locks. Missed a day? Play it from the calendar button.</p>
+    <form method="dialog"><button class="primary">Play</button></form>
+  </dialog>
+
+  <dialog id="stats">
+    <form method="dialog"><button class="close" aria-label="Close">×</button></form>
+    <h2>Statistics</h2>
+    <div class="stat-row" id="stat-row"></div>
+    <h3>Attempts per lock</h3>
+    <div class="dist" id="dist"></div>
+  </dialog>
+
+  <dialog id="archive">
+    <form method="dialog"><button class="close" aria-label="Close">×</button></form>
+    <h2>Past puzzles</h2>
+    <p class="fine">Every day has its own locks. Past puzzles don't count toward your stats or streak.</p>
+    <label class="archive-pick">Go to a date <input type="date" id="archive-date"></label>
+    <div class="archive-list" id="archive-list"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="logic.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
