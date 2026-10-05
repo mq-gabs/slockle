@@ -3,6 +3,8 @@
   'use strict';
 
   const PL = window.PatternLock;
+  const I18N = window.PatternLockI18n;
+  const t = I18N.t;
   const { LOCKS, MAX_ATTEMPTS, GREEN, YELLOW } = PL;
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const OLD_STATE_KEY = 'pattern-lock-state';
@@ -68,7 +70,7 @@
   function prepare(indices, done) {
     const missing = indices.filter((i) => !answers[i]);
     if (!missing.length) return done();
-    $('msg').textContent = 'Preparing the lock…';
+    $('msg').textContent = t('play.preparing');
     setTimeout(() => {
       missing.forEach(answer);
       $('msg').textContent = '';
@@ -141,7 +143,7 @@
   }
 
   function describe(path, marks) {
-    const words = { [GREEN]: 'right step', [YELLOW]: 'wrong step', 0: 'not in pattern' };
+    const words = { [GREEN]: t('mark.g'), [YELLOW]: t('mark.y'), 0: t('mark.x') };
     return path.map((d, i) => `${d + 1}${marks ? ` (${words[marks[i]]})` : ''}`).join(', ');
   }
 
@@ -223,10 +225,10 @@
     const { len } = cfg();
     const l = lock();
     if (path.length !== len) {
-      return reject(`Use exactly ${len} dots. That was ${path.length}, so no attempt used.`);
+      return reject(t('play.wrongLength', len, path.length));
     }
     if (l.guesses.some((g) => g.join() === path.join())) {
-      return reject('You already tried that pattern.');
+      return reject(t('play.repeat'));
     }
     l.guesses.push(path);
     const solved = path.join() === answer(state.current).join();
@@ -235,8 +237,8 @@
     else ensureHints(state.current);
     persist();
     renderPlay(true);
-    if (solved) $('msg').textContent = l.guesses.length === 1 ? 'First try. Unlocked!' : `Unlocked in ${l.guesses.length}!`;
-    else if (l.status === 'lost') $('msg').textContent = 'Locked out. Here is the pattern.';
+    if (solved) $('msg').textContent = l.guesses.length === 1 ? t('play.firstTry') : t('play.unlocked', l.guesses.length);
+    else if (l.status === 'lost') $('msg').textContent = t('play.lost');
   }
 
   // ---------- rendering ----------
@@ -248,12 +250,16 @@
       const l = state.locks[i];
       const pill = document.createElement('div');
       let cls = 'lock-pill';
-      let text = `Lock ${i + 1} · ${c.n}×${c.n}`;
-      if (l.status === 'won') { cls += ' won'; text = `Lock ${i + 1} · ${l.guesses.length}/6`; }
-      else if (l.status === 'lost') { cls += ' lost'; text = `Lock ${i + 1} · X/6`; }
+      let detail = `${c.n}×${c.n}`;
+      if (l.status === 'won') { cls += ' won'; detail = `${l.guesses.length}/6`; }
+      else if (l.status === 'lost') { cls += ' lost'; detail = 'X/6'; }
       if (i === state.current) cls += ' current';
       pill.className = cls;
-      pill.textContent = text;
+      const name = document.createElement('span');
+      name.textContent = t('tab.lock', i + 1);
+      const small = document.createElement('small');
+      small.textContent = detail;
+      pill.append(name, small);
       nav.appendChild(pill);
     });
   }
@@ -267,25 +273,23 @@
     const l = lock();
     const ans = answers[i];
 
-    $('lock-info').innerHTML = `Lock ${i + 1} of 3 · <strong>${len} dots</strong>`;
+    $('lock-info').innerHTML = t('play.lockInfo', i + 1, len);
     const left = MAX_ATTEMPTS - l.guesses.length;
-    $('attempts').innerHTML = l.status === 'playing'
-      ? `<strong>${left}</strong> attempt${left === 1 ? '' : 's'} left`
-      : '';
+    $('attempts').innerHTML = l.status === 'playing' ? t('play.attempts', left) : '';
 
     // Main grid: revealed answer, else the last guess's colors, else empty.
     const last = l.guesses[l.guesses.length - 1];
     if (!ans) drawGrid(gridSvg, n);
     else if (l.status !== 'playing') {
       drawGrid(gridSvg, n, { path: ans, tone: 'answer' });
-      gridSvg.setAttribute('aria-label', `Answer: ${describe(ans)}`);
+      gridSvg.setAttribute('aria-label', t('aria.answer', describe(ans)));
     } else if (last) {
       const marks = PL.feedback(last, ans);
       drawGrid(gridSvg, n, { path: last, marks, tone: 'fb' });
-      gridSvg.setAttribute('aria-label', `Last guess: ${describe(last, marks)}. Drag to draw a new pattern.`);
+      gridSvg.setAttribute('aria-label', t('aria.lastGuess', describe(last, marks)));
     } else {
       drawGrid(gridSvg, n);
-      gridSvg.setAttribute('aria-label', `Empty ${n} by ${n} grid. Drag to draw a pattern of ${len} dots.`);
+      gridSvg.setAttribute('aria-label', t('aria.empty', n, len));
     }
 
     const thumbs = $('thumbs');
@@ -293,29 +297,27 @@
     if (ans) {
       l.guesses.forEach((g, k) => {
         const marks = PL.feedback(g, ans);
-        thumbs.appendChild(miniGrid(n, { path: g, marks, tone: 'fb', numbers: false }, `Guess ${k + 1}: ${describe(g, marks)}`));
+        thumbs.appendChild(miniGrid(n, { path: g, marks, tone: 'fb', numbers: false }, t('aria.guess', k + 1, describe(g, marks))));
       });
     }
 
     const end = $('lock-end');
     end.hidden = l.status === 'playing';
-    $('next-btn').textContent = i < LOCKS.length - 1 ? 'Next lock →' : 'See results';
+    $('next-btn').textContent = t(i < LOCKS.length - 1 ? 'play.next' : 'play.results');
 
     const list = $('hints');
     list.replaceChildren();
     l.hints.forEach((h, k) => {
       if (h.k === 'none' && l.hints[k - 1].k === 'none') return;
       const li = document.createElement('li');
-      li.textContent = h.k === 'none'
-        ? 'No new hint: your colors and hints already tell you more than another hint would.'
-        : PL.hintText(h, n);
+      li.textContent = h.k === 'none' ? t('play.noHint') : I18N.hintText(h, n);
       if (newHint && k === l.hints.length - 1 && l.guesses.length) li.className = 'new';
       list.appendChild(li);
     });
     if (l.status === 'playing' && l.guesses.length < MAX_ATTEMPTS - 1) {
       const li = document.createElement('li');
       li.className = 'locked';
-      li.textContent = 'Each miss unlocks another hint.';
+      li.textContent = t('play.moreHints');
       list.appendChild(li);
     }
   }
@@ -327,7 +329,7 @@
     renderTabs();
 
     const wins = state.locks.filter((l) => l.status === 'won').length;
-    $('result-title').textContent = wins === 3 ? 'All three locks open!' : `${wins} of 3 locks opened`;
+    $('result-title').textContent = wins === 3 ? t('result.allOpen') : t('result.some', wins);
 
     const box = $('result-locks');
     box.replaceChildren();
@@ -335,7 +337,7 @@
       const l = state.locks[i];
       const wrap = document.createElement('div');
       wrap.className = 'result-lock';
-      wrap.appendChild(miniGrid(c.n, { path: answer(i), tone: 'answer' }, `Lock ${i + 1} answer: ${describe(answer(i))}`));
+      wrap.appendChild(miniGrid(c.n, { path: answer(i), tone: 'answer' }, t('aria.lockAnswer', i + 1, describe(answer(i)))));
       const p = document.createElement('p');
       p.textContent = l.status === 'won' ? `${l.guesses.length}/6` : 'X/6';
       if (l.status !== 'won') p.className = 'lost';
@@ -401,10 +403,10 @@
     const row = $('stat-row');
     const winRate = stats.played ? Math.round((stats.won / stats.played) * 100) : 0;
     row.innerHTML = [
-      [stats.played, 'Played'],
-      [winRate, 'Win %'],
-      [liveStreak(), 'Current streak'],
-      [stats.best, 'Best streak'],
+      [stats.played, t('stats.played')],
+      [winRate, t('stats.winRate')],
+      [liveStreak(), t('stats.streak')],
+      [stats.best, t('stats.best')],
     ].map(([v, label]) => `<div><strong>${v}</strong><span>${label}</span></div>`).join('');
 
     const dist = $('dist');
@@ -421,18 +423,18 @@
   }
 
   function toast(text) {
-    const t = $('toast');
-    t.textContent = text;
-    t.hidden = false;
+    const box = $('toast');
+    box.textContent = text;
+    box.hidden = false;
     clearTimeout(toast.timer);
-    toast.timer = setTimeout(() => { t.hidden = true; }, 1800);
+    toast.timer = setTimeout(() => { box.hidden = true; }, 1800);
   }
 
   $('share-btn').addEventListener('click', async () => {
     const text = PL.shareText(day, state.locks, [0, 1, 2].map(answer));
     try {
       await navigator.clipboard.writeText(text);
-      toast('Copied to clipboard');
+      toast(t('toast.copied'));
     } catch (e) {
       const area = document.createElement('textarea');
       area.value = text;
@@ -440,7 +442,7 @@
       area.select();
       const ok = document.execCommand('copy');
       area.remove();
-      toast(ok ? 'Copied to clipboard' : 'Could not copy');
+      toast(t(ok ? 'toast.copied' : 'toast.failed'));
     }
   });
 
@@ -466,20 +468,18 @@
 
   drawGrid($('example-grid'), 3, { path: [0, 4, 8, 7, 6], marks: PL.feedback([0, 4, 8, 7, 6], [0, 1, 4, 7, 8]), tone: 'fb' });
 
-  // ---------- start ----------
-
   // ---------- archive ----------
 
   const formatDate = (d, opts) => new Date(PL.dateKey(d) + 'T12:00:00Z')
-    .toLocaleDateString(undefined, { timeZone: 'UTC', ...opts });
+    .toLocaleDateString(I18N.locale, { timeZone: 'UTC', ...opts });
 
   const dayUrl = (d) => (d === today ? location.pathname : `${location.pathname}?d=${PL.dateKey(d)}`);
 
   function dayStatus(d) {
     const s = load(stateKey(d), null);
-    if (!s || !s.locks.some((l) => l.guesses.length)) return { cls: '', text: 'Not played' };
+    if (!s || !s.locks.some((l) => l.guesses.length)) return { cls: '', text: t('archive.notPlayed') };
     const done = s.locks.filter((l) => l.status !== 'playing').length;
-    if (done < s.locks.length) return { cls: 'partial', text: `In progress · ${done}/3 locks` };
+    if (done < s.locks.length) return { cls: 'partial', text: t('archive.inProgress', done) };
     const won = s.locks.filter((l) => l.status === 'won').length;
     return { cls: won === 3 ? 'won' : 'partial', text: s.locks.map((l) => (l.status === 'won' ? `${l.guesses.length}/6` : 'X/6')).join('  ') };
   }
@@ -492,7 +492,7 @@
       const a = document.createElement('a');
       a.href = dayUrl(d);
       a.className = `archive-day ${st.cls}${d === day ? ' current' : ''}`;
-      a.innerHTML = `<span>${d === today ? 'Today' : formatDate(d, { weekday: 'short', month: 'short', day: 'numeric' })}</span>`
+      a.innerHTML = `<span>${d === today ? t('archive.today') : formatDate(d, { weekday: 'short', month: 'short', day: 'numeric' })}</span>`
         + `<span class="archive-status">${st.text}</span>`;
       list.appendChild(a);
     }
@@ -511,12 +511,40 @@
   $('archive-banner-today').href = dayUrl(today);
   $('result-today-btn').href = dayUrl(today);
 
-  $('puzzle-no').textContent = day >= 0 ? `#${day + 1}` : '';
-  if (isArchive) {
-    $('archive-banner').hidden = false;
-    $('archive-banner-date').textContent = formatDate(day, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    document.title = `Pattern Lock · ${PL.dateKey(day)}`;
+  // ---------- language ----------
+
+  // Static markup comes from data-i18n attributes; everything drawn by code is rendered again.
+  function applyLanguage() {
+    I18N.apply(document);
+    if (isArchive) {
+      $('archive-banner-date').textContent = formatDate(day, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.title = `Pattern Lock · ${PL.dateKey(day)}`;
+    } else {
+      document.title = t('doc.title');
+    }
   }
+
+  const langSelect = $('lang');
+  for (const [code, info] of Object.entries(I18N.LANGS)) {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = info.label;
+    opt.title = info.name;
+    langSelect.appendChild(opt);
+  }
+  langSelect.value = I18N.lang;
+  langSelect.addEventListener('change', () => {
+    I18N.setLang(langSelect.value);
+    applyLanguage();
+    $('msg').textContent = '';
+    render();
+  });
+
+  // ---------- start ----------
+
+  $('puzzle-no').textContent = day >= 0 ? `#${day + 1}` : '';
+  $('archive-banner').hidden = !isArchive;
+  applyLanguage();
   render();
   if (!load(SEEN_KEY, false)) {
     save(SEEN_KEY, true);

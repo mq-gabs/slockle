@@ -64,7 +64,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border-bottom: 1px solid var(--border);
 }
 
-.top h1 { font-size: 1.25rem; margin: 0; letter-spacing: 0.01em; }
+.top h1 { font-size: clamp(1rem, 4.6vw, 1.25rem); margin: 0; letter-spacing: 0.01em; white-space: nowrap; }
 .top h1 span { color: var(--muted); font-weight: 500; }
 
 .top-actions { display: flex; gap: 8px; }
@@ -78,6 +78,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font-weight: 700;
   display: grid;
   place-items: center;
+}
+
+.lang-select {
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0 8px;
+  cursor: pointer;
 }
 
 .icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
@@ -105,9 +118,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .lock-pill {
   flex: 1;
-  text-align: center;
-  padding: 6px 4px;
-  border-radius: 999px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.25;
+  padding: 5px 4px;
+  border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--muted);
@@ -115,14 +132,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
   white-space: nowrap;
 }
 
+.lock-pill small { font-size: 0.75rem; font-weight: 500; font-variant-numeric: tabular-nums; }
 .lock-pill.current { border-color: var(--accent); color: var(--text); font-weight: 600; }
 .lock-pill.won { color: var(--green); }
-.lock-pill.lost { color: var(--muted); text-decoration: line-through; }
+.lock-pill.lost small { text-decoration: line-through; }
 
 /* ---------- play area ---------- */
 
 .status {
   display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
   justify-content: space-between;
   color: var(--muted);
   font-size: 0.9rem;

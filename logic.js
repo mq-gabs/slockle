@@ -207,54 +207,7 @@
   }
 
   // ---------- hints ----------
-  // A hint is stored as a plain spec object and turned into text + predicate on demand.
-
-  const NUM_WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'];
-  const ROWS = { 3: ['top', 'middle', 'bottom'], 4: ['top', 'second', 'third', 'bottom'] };
-  const COLS = { 3: ['left', 'middle', 'right'], 4: ['left', 'second', 'third', 'right'] };
-  const KIND_NAMES = {
-    d: ['diagonal line', 'diagonal lines'],
-    h: ['horizontal line', 'horizontal lines'],
-    v: ['vertical line', 'vertical lines'],
-    o: ['slanted knight-style line', 'slanted knight-style lines'],
-  };
-
-  function dotName(n, d) {
-    const x = d % n, y = (d / n) | 0, last = n - 1;
-    const r = region(n, d);
-    if (r === 'corner') return `the ${y === 0 ? 'top' : 'bottom'}-${x === 0 ? 'left' : 'right'} corner`;
-    if (n === 3) {
-      if (r === 'center') return 'the center dot';
-      if (y === 0 || y === last) return `the ${y === 0 ? 'top' : 'bottom'} middle dot`;
-      return `the middle ${x === 0 ? 'left' : 'right'} dot`;
-    }
-    return `the dot in row ${y + 1}, column ${x + 1}`;
-  }
-
-  function regionText(n, r, verb) {
-    if (r === 'corner') return `${verb} in a corner`;
-    if (r === 'edge') return `${verb} on an edge, not a corner`;
-    return n === 3 ? `${verb} at the center dot` : `${verb} on one of the four middle dots`;
-  }
-
-  function hintText(spec, n) {
-    const verb = spec.k.startsWith('start') ? 'Starts' : 'Ends';
-    switch (spec.k) {
-      case 'len': return `Uses ${spec.v} dots`;
-      case 'startRegion': case 'endRegion': return regionText(n, spec.v, verb);
-      case 'startRow': case 'endRow': return `${verb} on the ${ROWS[n][spec.v]} row`;
-      case 'startCol': case 'endCol': return `${verb} in the ${COLS[n][spec.v]} column`;
-      case 'kind': {
-        const [one, many] = KIND_NAMES[spec.kind];
-        if (spec.v === 0) return `Has no ${many}`;
-        return `Has exactly ${NUM_WORDS[spec.v]} ${spec.v === 1 ? one : many}`;
-      }
-      case 'turns': return `Changes direction exactly ${NUM_WORDS[spec.v]} times`;
-      case 'avoid': return `Never touches ${dotName(n, spec.dot)}`;
-      case 'step': return `Step ${spec.i + 1} is ${dotName(n, spec.dot)}`;
-    }
-    return '';
-  }
+  // A hint is stored as a plain spec object; i18n.js turns it into text, hintTest into a predicate.
 
   function hintTest(spec, n) {
     switch (spec.k) {
@@ -368,7 +321,7 @@
   const api = {
     LOCKS, MAX_ATTEMPTS, GREEN, YELLOW, GRAY,
     grid, skippedDots, enumerate, countTurns, countKind, region, feedback,
-    dayNumber, dateKey, dayFromKey, lockSet, dailyAnswer, nextHint, hintText, hintTest, dotName, shareText,
+    dayNumber, dateKey, dayFromKey, lockSet, dailyAnswer, nextHint, hintTest, shareText,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.PatternLock = api;
