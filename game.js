@@ -467,6 +467,11 @@
   }
 
   drawGrid($('example-grid'), 3, { path: [0, 4, 8, 7, 6], marks: PL.feedback([0, 4, 8, 7, 6], [0, 1, 4, 7, 8]), tone: 'fb' });
+  // One move of each line kind, for the "Line types" part of How to play.
+  drawGrid($('line-h'), 3, { path: [3, 4], numbers: false });
+  drawGrid($('line-v'), 3, { path: [1, 4], numbers: false });
+  drawGrid($('line-d'), 3, { path: [0, 4], numbers: false });
+  drawGrid($('line-o'), 3, { path: [0, 5], numbers: false });
 
   // ---------- archive ----------
 

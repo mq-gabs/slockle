@@ -322,6 +322,12 @@ dialog .primary { display: block; margin: 12px auto 0; }
 .example { display: flex; gap: 14px; align-items: center; }
 .small-grid { width: 120px; flex: none; }
 
+.line-types { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.line-types figure { margin: 0; }
+.line-types .grid { border-radius: 8px; }
+.line-types .g-line { opacity: 0.9; stroke-width: 3.5; }
+.line-types figcaption { font-size: 0.75rem; line-height: 1.25; color: var(--muted); text-align: center; margin-top: 4px; }
+
 .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; gap: 4px; }
 .stat-row strong { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
 .stat-row span { font-size: 0.75rem; color: var(--muted); }
