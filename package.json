@@ -1,0 +1,21 @@
+{
+  "name": "pattern-lock",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,magenta \"npm run dev -w @pattern-lock/server\" \"npm run dev -w @pattern-lock/web\"",
+    "build": "npm run build -w @pattern-lock/shared && npm run build -w @pattern-lock/server && npm run build -w @pattern-lock/web",
+    "start": "npm run start -w @pattern-lock/server",
+    "test": "vitest run",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

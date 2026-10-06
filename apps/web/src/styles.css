@@ -193,8 +193,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   -webkit-user-select: none;
 }
 
-#grid { flex: 1; min-width: 0; max-width: 420px; cursor: crosshair; }
-#grid.shake { animation: shake 0.35s; }
+.board-grid { flex: 1; min-width: 0; max-width: 420px; cursor: crosshair; }
+.board-grid.shake { animation: shake 0.35s; }
 
 @keyframes shake {
   20%, 60% { transform: translateX(-6px); }
@@ -206,7 +206,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (max-width: 480px) {
   .board { flex-direction: column; align-items: stretch; }
-  #grid { max-width: none; }
+  .board-grid { max-width: none; }
   /* Three per row keeps each try big enough to read its arrows. */
   .thumbs { flex-direction: row; flex-wrap: wrap; width: auto; gap: 8px; }
   .thumbs .grid { width: calc((100% - 16px) / 3); }
@@ -287,7 +287,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- result ---------- */
 
-#result { text-align: center; padding-top: 8px; }
+.result { text-align: center; padding-top: 8px; }
 .result-title { margin: 6px 0 16px; }
 .result-locks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
 .result-lock .grid { border-radius: 10px; }
@@ -297,8 +297,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .countdown strong { color: var(--text); font-variant-numeric: tabular-nums; }
 
 .result-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-#result-today-btn { display: none; }
-.archive-banner:not([hidden]) ~ #result #result-today-btn { display: inline; }
 
 /* ---------- archive ---------- */
 
