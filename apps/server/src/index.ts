@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import { LOCKS, lockSet } from '@pattern-lock/shared';
+import { LOCKS, lockSet } from '@slockle/shared';
 import { createApp } from './app.js';
 import { InMemoryDayResultRepository } from './persistence/InMemoryDayResultRepository.js';
 
@@ -13,5 +13,5 @@ const repository = new InMemoryDayResultRepository();
 LOCKS.forEach((_, i) => lockSet(i));
 
 createApp({ repository, webDist }).listen(port, () => {
-  console.log(`Pattern Lock API listening on http://localhost:${port}`);
+  console.log(`Slockle API listening on http://localhost:${port}`);
 });

@@ -1,7 +1,7 @@
 import {
   DIST_BUCKETS, FAILED_BUCKET, LOCKS, dayFromKey,
   type DayKey, type DayStatsDto, type PlayerStatsDto,
-} from '@pattern-lock/shared';
+} from '@slockle/shared';
 import type { DayResultRepository } from '../persistence/DayResultRepository.js';
 import type { LockResult } from './DayResult.js';
 

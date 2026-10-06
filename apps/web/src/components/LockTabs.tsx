@@ -1,4 +1,4 @@
-import { LOCKS } from '@pattern-lock/shared';
+import { LOCKS } from '@slockle/shared';
 import type { LockState } from '../game/state';
 import { useI18n } from '../i18n/I18nProvider';
 

@@ -1,5 +1,5 @@
 {
-  "name": "pattern-lock",
+  "name": "slockle",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -7,9 +7,9 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently -n server,web -c blue,magenta \"npm run dev -w @pattern-lock/server\" \"npm run dev -w @pattern-lock/web\"",
-    "build": "npm run build -w @pattern-lock/shared && npm run build -w @pattern-lock/server && npm run build -w @pattern-lock/web",
-    "start": "npm run start -w @pattern-lock/server",
+    "dev": "concurrently -n server,web -c blue,magenta \"npm run dev -w @slockle/server\" \"npm run dev -w @slockle/web\"",
+    "build": "npm run build -w @slockle/shared && npm run build -w @slockle/server && npm run build -w @slockle/web",
+    "start": "npm run start -w @slockle/server",
     "test": "vitest run",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },

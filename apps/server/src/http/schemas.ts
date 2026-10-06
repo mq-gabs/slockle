@@ -1,4 +1,4 @@
-import { MAX_ATTEMPTS, dayFromKey } from '@pattern-lock/shared';
+import { MAX_ATTEMPTS, dayFromKey } from '@slockle/shared';
 import { z } from 'zod';
 
 export const dateParam = z.string().refine((s) => dayFromKey(s) !== null, 'Expected a real YYYY-MM-DD date');

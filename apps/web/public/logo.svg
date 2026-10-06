@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Slockle">
+  <title>Slockle</title>
+  <!-- Pattern 1→5→9→8→7→3 on a 3×3 grid: used dots green, unused dots gray. -->
+  <polyline points="24,24 60,60 96,96 60,96 24,96 96,24" fill="none" stroke="#5fbf83"
+    stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+  <g fill="#b9bcc4">
+    <circle cx="60" cy="24" r="8" />
+    <circle cx="24" cy="60" r="8" />
+    <circle cx="96" cy="60" r="8" />
+  </g>
+  <g fill="#2f9e57">
+    <circle cx="24" cy="24" r="12" />
+    <circle cx="60" cy="60" r="12" />
+    <circle cx="96" cy="96" r="12" />
+    <circle cx="60" cy="96" r="12" />
+    <circle cx="24" cy="96" r="12" />
+    <circle cx="96" cy="24" r="12" />
+  </g>
+</svg>

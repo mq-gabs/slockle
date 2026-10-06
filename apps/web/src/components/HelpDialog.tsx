@@ -1,4 +1,4 @@
-import { feedback } from '@pattern-lock/shared';
+import { feedback } from '@slockle/shared';
 import { useI18n } from '../i18n/I18nProvider';
 import type { StringKey } from '../i18n/strings';
 import { Legend } from './Legend';

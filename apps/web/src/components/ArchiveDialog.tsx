@@ -1,4 +1,4 @@
-import { LOCKS, dateKey, dayFromKey } from '@pattern-lock/shared';
+import { LOCKS, dateKey, dayFromKey } from '@slockle/shared';
 import { useMemo } from 'react';
 import { loadState } from '../game/state';
 import { useI18n, type I18n } from '../i18n/I18nProvider';

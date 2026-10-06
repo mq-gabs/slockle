@@ -1,4 +1,4 @@
-import { puzzleNumber } from '@pattern-lock/shared';
+import { puzzleNumber } from '@slockle/shared';
 import { useI18n } from '../i18n/I18nProvider';
 import { LANGS, type Lang } from '../i18n/strings';
 
@@ -27,7 +27,10 @@ export function Header({ day, onHelp, onArchive, onStats }: HeaderProps) {
           ))}
         </select>
       </div>
-      <h1>Pattern Lock {num !== null && <span>#{num}</span>}</h1>
+      <h1>
+        <img className="logo" src="/logo.svg" alt="" width="28" height="28" />
+        Slockle {num !== null && <span>#{num}</span>}
+      </h1>
       <div className="top-actions">
         <button className="icon-btn" aria-label={t('aria.archive')} onClick={onArchive}>
           <svg viewBox="0 0 24 24" aria-hidden="true">

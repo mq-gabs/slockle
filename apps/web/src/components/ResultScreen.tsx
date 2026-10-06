@@ -1,4 +1,4 @@
-import { LOCKS, shareText, type Pattern } from '@pattern-lock/shared';
+import { LOCKS, shareText, type Pattern } from '@slockle/shared';
 import { useEffect, useState } from 'react';
 import type { DayState } from '../game/state';
 import { useI18n } from '../i18n/I18nProvider';

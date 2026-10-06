@@ -1,7 +1,7 @@
 import {
   dateKey, utcDayNumber,
   type ApiError, type DayResultDto, type DayStatsDto, type PlayerStatsDto, type SubmitResultResponse,
-} from '@pattern-lock/shared';
+} from '@slockle/shared';
 import { Router, type ErrorRequestHandler, type Response } from 'express';
 import { z } from 'zod';
 import type { DayResult } from '../domain/DayResult.js';

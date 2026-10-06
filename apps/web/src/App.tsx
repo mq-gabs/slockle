@@ -1,4 +1,4 @@
-import { LOCKS, dateKey, dayFromKey, dayNumber } from '@pattern-lock/shared';
+import { LOCKS, dateKey, dayFromKey, dayNumber } from '@slockle/shared';
 import { useEffect, useRef, useState } from 'react';
 import { submitResult } from './api/client';
 import { ArchiveDialog, formatDate } from './components/ArchiveDialog';
@@ -39,7 +39,7 @@ export function App() {
   useEffect(() => storage.set(SEEN_HELP_KEY, true), []);
 
   useEffect(() => {
-    document.title = isArchive ? `Pattern Lock · ${dateKey(day)}` : t('doc.title');
+    document.title = isArchive ? `Slockle · ${dateKey(day)}` : t('doc.title');
   }, [t]);
 
   useEffect(() => {

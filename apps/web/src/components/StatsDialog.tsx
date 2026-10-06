@@ -1,4 +1,4 @@
-import { FAILED_BUCKET, dateKey, type DayStatsDto, type PlayerStatsDto } from '@pattern-lock/shared';
+import { FAILED_BUCKET, dateKey, type DayStatsDto, type PlayerStatsDto } from '@slockle/shared';
 import { useEffect, useState } from 'react';
 import { getDayStats, getPlayerStats } from '../api/client';
 import type { DayState } from '../game/state';

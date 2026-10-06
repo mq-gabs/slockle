@@ -1,4 +1,4 @@
-import type { DayKey } from '@pattern-lock/shared';
+import type { DayKey } from '@slockle/shared';
 import type { DayResult } from '../domain/DayResult.js';
 
 /**

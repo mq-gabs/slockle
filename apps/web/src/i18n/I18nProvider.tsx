@@ -1,10 +1,10 @@
-import type { HintSpec } from '@pattern-lock/shared';
+import type { HintSpec } from '@slockle/shared';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { storage } from '../game/storage';
+import { KEY_PREFIX, storage } from '../game/storage';
 import { HINT_WRITERS } from './hints';
 import { LANGS, type Lang, type StringKey } from './strings';
 
-const STORE_KEY = 'pattern-lock-lang';
+const STORE_KEY = `${KEY_PREFIX}lang`;
 
 function detect(): Lang {
   const saved = storage.get<string>(STORE_KEY, '');

@@ -1,5 +1,5 @@
 {
-  "name": "@pattern-lock/web",
+  "name": "@slockle/web",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@pattern-lock/shared": "*",
+    "@slockle/shared": "*",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

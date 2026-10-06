@@ -1,6 +1,6 @@
 import {
   LOCKS, checkGuesses, dailyAnswer, dayFromKey, lockOutcome, utcDayNumber, type DayKey, type Pattern,
-} from '@pattern-lock/shared';
+} from '@slockle/shared';
 import type { DayResultRepository } from '../persistence/DayResultRepository.js';
 import type { DayResult, LockResult } from './DayResult.js';
 import { DomainError } from './errors.js';

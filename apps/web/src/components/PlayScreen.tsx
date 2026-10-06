@@ -1,4 +1,4 @@
-import { LOCKS, MAX_ATTEMPTS, Mark, feedback, type Pattern } from '@pattern-lock/shared';
+import { LOCKS, MAX_ATTEMPTS, Mark, feedback, type Pattern } from '@slockle/shared';
 import { useEffect, useState } from 'react';
 import type { LockState } from '../game/state';
 import type { GuessOutcome } from '../game/useDayGame';

@@ -1,8 +1,8 @@
 import {
   LOCKS, MAX_ATTEMPTS, dailyAnswer, dateKey, isLockSetReady, nextHint,
   type HintSpec, type LockStatus, type Pattern,
-} from '@pattern-lock/shared';
-import { storage } from './storage';
+} from '@slockle/shared';
+import { KEY_PREFIX, storage } from './storage';
 
 export interface LockState {
   guesses: Pattern[];
@@ -20,7 +20,7 @@ export interface DayState {
   locks: LockState[];
 }
 
-export const stateKey = (day: number) => `pattern-lock-day-${dateKey(day)}`;
+export const stateKey = (day: number) => `${KEY_PREFIX}day-${dateKey(day)}`;
 
 export function freshState(day: number): DayState {
   return {

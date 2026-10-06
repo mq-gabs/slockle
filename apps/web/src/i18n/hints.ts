@@ -1,5 +1,5 @@
-// Hint wording. Hints are specs from @pattern-lock/shared; each language words them with its own grammar.
-import type { HintSpec, LineKind } from '@pattern-lock/shared';
+// Hint wording. Hints are specs from @slockle/shared; each language words them with its own grammar.
+import type { HintSpec, LineKind } from '@slockle/shared';
 import type { Lang } from './strings';
 
 type HintWriter = (spec: HintSpec, n: number) => string;

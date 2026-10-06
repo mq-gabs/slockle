@@ -1,4 +1,4 @@
-import { skippedDots, type Mark, type Pattern } from '@pattern-lock/shared';
+import { skippedDots, type Mark, type Pattern } from '@slockle/shared';
 import { useRef, useState, type PointerEvent } from 'react';
 import { PatternGrid, dotPos, dotSpacing } from './PatternGrid';
 

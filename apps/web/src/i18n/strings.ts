@@ -5,7 +5,7 @@ type Str = string | ((...args: any[]) => string);
 const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 
 const en = {
-  'doc.title': 'Daily Pattern Lock',
+  'doc.title': 'Slockle',
   'aria.help': 'How to play',
   'aria.archive': 'Past puzzles',
   'aria.stats': 'Statistics',
@@ -102,7 +102,7 @@ export type StringKey = keyof typeof en;
 export type Strings = Record<StringKey, Str>;
 
 const pt: Strings = {
-  'doc.title': 'Pattern Lock Diário',
+  'doc.title': 'Slockle',
   'aria.help': 'Como jogar',
   'aria.archive': 'Desafios anteriores',
   'aria.stats': 'Estatísticas',

@@ -1,5 +1,6 @@
 import type { LockConfig } from './types.js';
 
+// The seeds still carry the game's original name on purpose: changing them changes every daily answer.
 export const LOCKS: readonly LockConfig[] = [
   { n: 3, len: 5, startHints: 1, seed: 'pattern-lock-1' },
   { n: 3, len: 7, startHints: 1, seed: 'pattern-lock-2' },

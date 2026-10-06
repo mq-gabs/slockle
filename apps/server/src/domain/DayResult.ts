@@ -1,4 +1,4 @@
-import type { DayKey } from '@pattern-lock/shared';
+import type { DayKey } from '@slockle/shared';
 
 export interface LockResult {
   status: 'won' | 'lost';

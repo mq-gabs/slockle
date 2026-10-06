@@ -1,4 +1,4 @@
-import { LOCKS, dailyAnswer, dateKey, lockSet, patternAt, type Pattern } from '@pattern-lock/shared';
+import { LOCKS, dailyAnswer, dateKey, lockSet, patternAt, type Pattern } from '@slockle/shared';
 import request from 'supertest';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from './app.js';

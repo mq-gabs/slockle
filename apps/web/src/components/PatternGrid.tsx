@@ -1,4 +1,4 @@
-import { Mark, grid, type Pattern } from '@pattern-lock/shared';
+import { Mark, grid, type Pattern } from '@slockle/shared';
 import type { PointerEventHandler, Ref } from 'react';
 
 const MARGIN = 16;

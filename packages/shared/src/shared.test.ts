@@ -93,6 +93,6 @@ describe('share text', () => {
       { status: 'lost', guesses: [] },
       { status: 'won', guesses: [[0, 1, 2, 5, 4, 3]] },
     ], answers);
-    expect(text).toBe('Pattern Lock #12\n🔓 3/6  🔒 X/6  🔓 1/6\n🟩🟩🟩🟩🟩🟩');
+    expect(text).toBe('Slockle #12\n🔓 3/6  🔒 X/6  🔓 1/6\n🟩🟩🟩🟩🟩🟩');
   });
 });

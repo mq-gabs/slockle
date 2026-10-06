@@ -1,6 +1,6 @@
 import type {
   DayKey, DayStatsDto, PlayerStatsDto, SubmitResultRequest, SubmitResultResponse,
-} from '@pattern-lock/shared';
+} from '@slockle/shared';
 
 export class ApiRequestError extends Error {
   constructor(readonly status: number, readonly code: string) {

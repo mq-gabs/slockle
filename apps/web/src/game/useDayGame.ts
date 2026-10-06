@@ -1,4 +1,4 @@
-import { LOCKS, MAX_ATTEMPTS, type Pattern } from '@pattern-lock/shared';
+import { LOCKS, MAX_ATTEMPTS, type Pattern } from '@slockle/shared';
 import { useCallback, useEffect, useState } from 'react';
 import { answerFor, isLockReady, loadState, saveState, withHints, type DayState, type LockState } from './state';
 
