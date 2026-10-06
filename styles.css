@@ -201,20 +201,25 @@ button { font: inherit; color: inherit; cursor: pointer; }
   40%, 80% { transform: translateX(6px); }
 }
 
-.thumbs { display: flex; flex-direction: column; gap: 6px; width: 64px; }
+.thumbs { display: flex; flex-direction: column; gap: 6px; width: 84px; }
 .thumbs .grid { border-radius: 8px; }
 
 @media (max-width: 480px) {
   .board { flex-direction: column; align-items: stretch; }
   #grid { max-width: none; }
-  .thumbs { flex-direction: row; width: auto; }
-  .thumbs .grid { width: calc((100% - 30px) / 6); }
+  /* Three per row keeps each try big enough to read its arrows. */
+  .thumbs { flex-direction: row; flex-wrap: wrap; width: auto; gap: 8px; }
+  .thumbs .grid { width: calc((100% - 16px) / 3); }
 }
 
 /* svg pieces */
 .g-line { fill: none; stroke: var(--line); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; }
 .g-line.answer { stroke: var(--green); opacity: 0.7; }
 .g-line.fb { stroke: var(--muted); opacity: 0.45; }
+.g-arrow { fill: var(--text); opacity: 0.75; }
+.thumbs .g-line { stroke-width: 3.5; }
+.thumbs .fb-y { stroke-width: 2.6; }
+.thumbs .fb-x { stroke-width: 2.2; }
 .g-dot { fill: var(--dot); }
 .g-on { fill: var(--accent); }
 .g-answer { fill: var(--green); }

@@ -104,13 +104,55 @@
   }
 
   // tone: 'draw' (live path), 'fb' (colored feedback), 'answer' (revealed solution)
-  function drawGrid(svg, n, { path = [], marks = null, tone = 'draw', numbers = true, live = null } = {}) {
+  // An arrowhead on each move, pointing the way it was drawn. It goes at the middle of a gap
+  // between dots (a move over used dots has a dot at its midpoint), and slides along the line
+  // when another arrow already sits there, as happens where moves cross or retrace.
+  function drawArrows(svg, n, path) {
+    const size = n === 3 ? 6 : 4.5;
+    const placed = [];
+    for (let i = 1; i < path.length; i++) {
+      const [x1, y1] = dotPos(n, path[i - 1]);
+      const [x2, y2] = dotPos(n, path[i]);
+      const len = Math.hypot(x2 - x1, y2 - y1);
+      const gaps = PL.grid(n).between[path[i - 1]][path[i]].length + 1;
+      // Candidate spots, gap centers first, then spreading out while staying clear of the dots.
+      const room = Math.max(0, 0.5 / gaps - (size + 4) / len);
+      const spots = [];
+      for (let step = 0; step <= 6; step++) {
+        for (let j = 0; j < gaps; j++) {
+          const c = (j + 0.5) / gaps, d = (room * step) / 6;
+          spots.push(c - d, c + d);
+        }
+      }
+      const at = (t) => [x1 + (x2 - x1) * t, y1 + (y2 - y1) * t];
+      const clearance = (p) => Math.min(Infinity, ...placed.map((q) => Math.hypot(p[0] - q[0], p[1] - q[1])));
+      let best = spots[0];
+      for (const t of spots) {
+        if (clearance(at(t)) >= size * 2.2) { best = t; break; }
+        if (clearance(at(t)) > clearance(at(best))) best = t;
+      }
+      const [mx, my] = at(best);
+      placed.push([mx, my]);
+
+      const ux = (x2 - x1) / len, uy = (y2 - y1) / len;
+      const pt = (along, side) => `${mx + ux * along - uy * side},${my + uy * along + ux * side}`;
+      el('polygon', {
+        points: [pt(size, 0), pt(-size, size), pt(-size * 0.4, 0), pt(-size, -size)].join(' '),
+        class: 'g-arrow',
+      }, svg);
+    }
+  }
+
+  // compact: smaller dot symbols, for thumbnails where lines and arrows need the room.
+  function drawGrid(svg, n, { path = [], marks = null, tone = 'draw', numbers = true, arrows = false, compact = false, live = null } = {}) {
     svg.replaceChildren();
+    const k = compact ? 0.7 : 1;
     const pts = path.map((d) => dotPos(n, d));
     if (live) pts.push(live);
     if (pts.length > 1) {
       el('polyline', { points: pts.map((p) => p.join(',')).join(' '), class: `g-line ${tone}` }, svg);
     }
+    if (arrows) drawArrows(svg, n, path);
     for (let d = 0; d < n * n; d++) {
       const [x, y] = dotPos(n, d);
       const step = path.indexOf(d);
@@ -120,14 +162,15 @@
       }
       if (marks) {
         const m = marks[step];
-        if (m === GREEN) el('circle', { cx: x, cy: y, r: 7, class: 'fb-g' }, svg);
-        else if (m === YELLOW) el('circle', { cx: x, cy: y, r: 5.6, class: 'fb-y' }, svg);
+        const c = 4.5 * k;
+        if (m === GREEN) el('circle', { cx: x, cy: y, r: 7 * k, class: 'fb-g' }, svg);
+        else if (m === YELLOW) el('circle', { cx: x, cy: y, r: 5.6 * k, class: 'fb-y' }, svg);
         else {
-          el('line', { x1: x - 4.5, y1: y - 4.5, x2: x + 4.5, y2: y + 4.5, class: 'fb-x' }, svg);
-          el('line', { x1: x - 4.5, y1: y + 4.5, x2: x + 4.5, y2: y - 4.5, class: 'fb-x' }, svg);
+          el('line', { x1: x - c, y1: y - c, x2: x + c, y2: y + c, class: 'fb-x' }, svg);
+          el('line', { x1: x - c, y1: y + c, x2: x + c, y2: y - c, class: 'fb-x' }, svg);
         }
       } else {
-        el('circle', { cx: x, cy: y, r: 6, class: tone === 'answer' ? 'g-answer' : 'g-on' }, svg);
+        el('circle', { cx: x, cy: y, r: 6 * k, class: tone === 'answer' ? 'g-answer' : 'g-on' }, svg);
       }
       if (numbers) {
         el('circle', { cx: x + 7, cy: y - 7, r: 4.2, class: 'badge' }, svg);
@@ -297,7 +340,7 @@
     if (ans) {
       l.guesses.forEach((g, k) => {
         const marks = PL.feedback(g, ans);
-        thumbs.appendChild(miniGrid(n, { path: g, marks, tone: 'fb', numbers: false }, t('aria.guess', k + 1, describe(g, marks))));
+        thumbs.appendChild(miniGrid(n, { path: g, marks, tone: 'fb', numbers: false, arrows: true, compact: true }, t('aria.guess', k + 1, describe(g, marks))));
       });
     }
 
