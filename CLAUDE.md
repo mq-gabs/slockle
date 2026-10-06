@@ -10,6 +10,7 @@ Run from the repo root.
 | --- | --- |
 | `npm install` | Installs all workspaces |
 | `npm run dev` | API on :3001 (tsx watch) and Vite on :5173; Vite proxies `/api` to the API |
+| `npm run dev:lan` | Same, with Vite also listening on the network (`--host`) to test on phones; open the printed Network URL |
 | `npm test` | Vitest for every workspace (shared logic + API) |
 | `npm run typecheck` | `tsc --noEmit` in each workspace |
 | `npm run build` | Builds shared → server → web, in that order (each depends on the previous) |
@@ -81,6 +82,7 @@ To add a real store (SQL, Redis, …): implement the interface in `apps/server/s
 - **Translations:** `strings.ts` types `pt` (and any new language) as `Record<StringKey, …>`, so a missing key fails the typecheck. Add a language by adding its strings, its hint writer and an entry in `LANGS`. Portuguese uses "Padrão" for a lock and "ordem" for a step.
 - **Drawing:** the pointer reach is 0.25 dot spacings on purpose; larger values make some valid 4×4 moves impossible to draw straight. A line over an unused dot adds that dot (`skippedDots`), like a phone lock.
 - **localStorage keys** all start with `KEY_PREFIX` (`slockle-`, in `apps/web/src/game/storage.ts`). Keys saved under the old `pattern-lock-` prefix are moved on load by `migrateLegacyKeys()`.
+- **Plain HTTP is a supported context.** `npm run dev:lan` opened by IP is not a secure context, so secure-only browser APIs are missing there (`crypto.randomUUID`, `navigator.clipboard`). Give any such API a fallback, as `randomUUID()` in `storage.ts` and `copyText()` in `ResultScreen.tsx` do.
 - **Thumbnails** draw direction arrows (`PatternGrid` `arrows`), placed in gaps between dots and moved apart where moves cross or retrace.
 - **Module resolution:** `@slockle/shared` exports a `development` condition pointing at `src/index.ts`. Vite, tsx (`--conditions=development`), Vitest and the typechecks use it, so development never needs a build. Production builds resolve `dist/`, which is why `npm run build` builds shared first.
 - **TypeScript is 7.x** (the native compiler). Server and shared use `NodeNext` with `.js` extensions in relative imports; the web app uses `Bundler` resolution without extensions.

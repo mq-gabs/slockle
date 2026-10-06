@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "dev": "concurrently -n server,web -c blue,magenta \"npm run dev -w @slockle/server\" \"npm run dev -w @slockle/web\"",
+    "dev:lan": "concurrently -n server,web -c blue,magenta \"npm run dev -w @slockle/server\" \"npm run dev -w @slockle/web -- --host\"",
     "build": "npm run build -w @slockle/shared && npm run build -w @slockle/server && npm run build -w @slockle/web",
     "start": "npm run start -w @slockle/server",
     "test": "vitest run",

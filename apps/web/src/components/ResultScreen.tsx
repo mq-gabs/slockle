@@ -23,12 +23,7 @@ export function ResultScreen({ state, answers, isArchive, notSaved, todayHref, o
 
   async function share() {
     const text = shareText(state.day, state.locks, answers);
-    try {
-      await navigator.clipboard.writeText(text);
-      onToast(t('toast.copied'));
-    } catch {
-      onToast(t('toast.failed'));
-    }
+    onToast(t((await copyText(text)) ? 'toast.copied' : 'toast.failed'));
   }
 
   return (
@@ -59,6 +54,28 @@ export function ResultScreen({ state, answers, isArchive, notSaved, todayHref, o
       {isArchive && <p><a className="today-link" href={todayHref}>{t('result.today')}</a></p>}
     </main>
   );
+}
+
+/**
+ * navigator.clipboard only exists in secure contexts (HTTPS or localhost); over plain HTTP,
+ * e.g. the dev server opened by IP, fall back to the older copy command.
+ */
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand('copy');
+    area.remove();
+    return ok;
+  }
 }
 
 /** Time left until local midnight; reloads into the new puzzle when it hits zero. */
