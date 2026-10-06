@@ -360,9 +360,44 @@ dialog .primary { display: block; margin: 12px auto 0; }
 .line-types .g-line { opacity: 0.9; stroke-width: 3.5; }
 .line-types figcaption { font-size: 0.75rem; line-height: 1.25; color: var(--muted); text-align: center; margin-top: 4px; }
 
-.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; gap: 4px; }
+.stat-row { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); text-align: center; gap: 4px; }
+.stat-row + .stat-row { margin-top: 12px; }
+.stats-section + .stats-section { margin-top: 20px; padding-top: 4px; border-top: 1px solid var(--border); }
+
+.info {
+  display: inline-block;
+  position: relative;
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  margin-left: 2px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  vertical-align: middle;
+  cursor: help;
+}
+.info svg { display: block; width: 100%; height: 100%; }
+.info::before { content: ''; position: absolute; inset: -6px; } /* larger tap target */
+.info:focus { outline: none; }
+.info:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.info-tip {
+  position: fixed;
+  z-index: 10;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: left;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.25);
+  pointer-events: none;
+}
 .stat-row strong { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
-.stat-row span { font-size: 0.75rem; color: var(--muted); }
+.stat-row > div > span { font-size: 0.75rem; color: var(--muted); }
 
 .dist { display: flex; flex-direction: column; gap: 4px; }
 .dist-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
@@ -378,6 +413,13 @@ dialog .primary { display: block; margin: 12px auto 0; }
   font-variant-numeric: tabular-nums;
 }
 .dist-bar.hl { background: var(--accent); color: var(--accent-text); }
+
+.lock-dists { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.lock-dists h4 { margin: 0; font-size: 0.85rem; }
+.lock-dists .fine { margin: 0 0 6px; font-size: 0.75rem; }
+.lock-dists .you { margin: 2px 0; font-size: 0.75rem; font-weight: 600; }
+.lock-dists .dist-row { gap: 4px; font-size: 0.75rem; }
+.lock-dists .dist-bar { min-width: 20px; padding: 1px 4px; }
 
 /* ---------- toast ---------- */
 

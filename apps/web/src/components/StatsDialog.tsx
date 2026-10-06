@@ -1,8 +1,9 @@
-import { FAILED_BUCKET, dateKey, type DayStatsDto, type PlayerStatsDto } from '@slockle/shared';
-import { useEffect, useState } from 'react';
+import { FAILED_BUCKET, LOCKS, dateKey, type DayStatsDto, type PlayerStatsDto } from '@slockle/shared';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { getDayStats, getPlayerStats } from '../api/client';
 import type { DayState } from '../game/state';
 import { useI18n } from '../i18n/I18nProvider';
+import { InfoTip } from './InfoTip';
 import { Modal } from './Modal';
 
 interface StatsDialogProps {
@@ -10,7 +11,7 @@ interface StatsDialogProps {
   onClose: () => void;
   playerId: string;
   today: number;
-  /** Today's game, to highlight its buckets once it has been submitted. */
+  /** Today's game: its per-lock results, and its buckets are highlighted once submitted. */
   todayState: DayState | null;
   /** Changes when a new result is stored, so the numbers refresh. */
   version: number;
@@ -47,33 +48,76 @@ export function StatsDialog({ open, onClose, playerId, today, todayState, versio
       {!failed && !p && <p className="fine">{t('stats.loading')}</p>}
       {p && (
         <>
-          <div className="stat-row">
-            {([
-              [p.played, 'stats.played'],
-              [p.played ? Math.round((p.won / p.played) * 100) : 0, 'stats.winRate'],
-              [p.currentStreak, 'stats.streak'],
-              [p.bestStreak, 'stats.best'],
-            ] as const).map(([v, key]) => (
-              <div key={key}><strong>{v}</strong><span>{t(key)}</span></div>
-            ))}
-          </div>
-          <h3>{t('stats.dist')}</h3>
-          <div className="dist">
-            {p.distribution.map((v, k) => (
-              <div key={k} className="dist-row">
-                <span>{k === FAILED_BUCKET ? 'X' : k + 1}</span>
-                <div
-                  className={`dist-bar${highlight.includes(k) ? ' hl' : ''}`}
-                  style={{ width: `${Math.max(8, (v / Math.max(1, ...p.distribution)) * 100)}%` }}
-                >
-                  {v}
-                </div>
+          <section className="stats-section">
+            <h3>{t('stats.you')}</h3>
+            <div className="stat-row">
+              <Stat value={p.played} label={t('stats.played')} info={t('info.played')} />
+              <Stat value={p.played ? Math.round((p.won / p.played) * 100) : 0} label={t('stats.winRate')} info={t('info.winRate')} />
+              <Stat value={p.currentStreak} label={t('stats.streak')} info={t('info.streak')} />
+              <Stat value={p.bestStreak} label={t('stats.best')} info={t('info.best')} />
+            </div>
+            <div className="stat-row" style={{ '--cols': LOCKS.length } as CSSProperties}>
+              {LOCKS.map((_, i) => {
+                const l = todayState?.locks[i];
+                const value = l?.status === 'won' ? `${l.guesses.length}/6` : l?.status === 'lost' ? 'X/6' : '–';
+                return <Stat key={i} value={value} label={t('tab.lock', i + 1)} info={t('info.lock', i + 1)} />;
+              })}
+            </div>
+          </section>
+
+          <section className="stats-section">
+            <h3>{t('stats.global')}</h3>
+            <div className="stat-row" style={{ '--cols': 2 } as CSSProperties}>
+              <Stat value={data.day.players} label={t('stats.players')} info={t('info.players')} />
+              <Stat value={data.day.allOpened} label={t('stats.allOpened')} info={t('info.allOpened')} />
+            </div>
+            {data.day.players === 0 ? (
+              <p className="fine">{t('stats.noPlayers')}</p>
+            ) : (
+              <div className="lock-dists">
+                {data.day.locks.map((l, i) => (
+                  <div key={i}>
+                    <h4>{t('tab.lock', i + 1)}</h4>
+                    <p className="fine">
+                      {t('stats.opened', l.opened, data.day.players)}{' '}
+                      <InfoTip label={t('stats.opened', l.opened, data.day.players)} text={t('info.lockOpened', i + 1)} />
+                    </p>
+                    <Distribution values={l.distribution} highlight={highlight[i] === undefined ? [] : [highlight[i]]} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {data.day.players > 0 && <p className="fine">{t('stats.today', data.day.players, data.day.allOpened)}</p>}
+            )}
+          </section>
         </>
       )}
     </Modal>
+  );
+}
+
+function Stat({ value, label, info }: { value: number | string; label: string; info: string }) {
+  return (
+    <div>
+      <strong>{value}</strong>
+      <span>{label} <InfoTip label={label} text={info} /></span>
+    </div>
+  );
+}
+
+function Distribution({ values, highlight }: { values: number[]; highlight: number[] }) {
+  const max = Math.max(1, ...values);
+  return (
+    <div className="dist">
+      {values.map((v, k) => (
+        <div key={k} className="dist-row">
+          <span>{k === FAILED_BUCKET ? 'X' : k + 1}</span>
+          <div
+            className={`dist-bar${highlight.includes(k) ? ' hl' : ''}`}
+            style={{ width: `${Math.max(8, (v / max) * 100)}%` }}
+          >
+            {v}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
