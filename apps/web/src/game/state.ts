@@ -1,5 +1,5 @@
 import {
-  LOCKS, MAX_ATTEMPTS, dailyAnswer, dateKey, isLockSetReady, nextHint,
+  LOCKS, dailyAnswer, dateKey, isLockSetReady, nextHint,
   type HintSpec, type LockStatus, type Pattern,
 } from '@slockle/shared';
 import { KEY_PREFIX, storage } from './storage';
@@ -33,13 +33,16 @@ export function freshState(day: number): DayState {
 
 export function loadState(day: number): DayState {
   const saved = storage.get<DayState | null>(stateKey(day), null);
-  if (!saved || saved.day !== day || !Array.isArray(saved.locks)) return freshState(day);
+  // Progress saved before the lock line-up changed doesn't fit the current locks; start over.
+  if (!saved || saved.day !== day || !Array.isArray(saved.locks) || saved.locks.length !== LOCKS.length) {
+    return freshState(day);
+  }
   return { ...saved, submitted: Boolean(saved.submitted) };
 }
 
 export const saveState = (state: DayState) => storage.set(stateKey(state.day), state);
 
-/** Answers need the lock's pattern list, which is slow to build the first time (lock 3). */
+/** Answers need the lock's pattern list, which is slow to build the first time (the longest locks). */
 export const isLockReady = (lock: number) => isLockSetReady(lock);
 
 const answers = new Map<string, Pattern>();
@@ -52,9 +55,9 @@ export function answerFor(lock: number, day: number): Pattern {
 
 /** Hints the player has earned: the starting ones plus one per miss (none after the last miss). */
 function earnedHints(lockIndex: number, lock: LockState): number {
-  const start = LOCKS[lockIndex]!.startHints;
+  const { startHints, attempts } = LOCKS[lockIndex]!;
   const misses = lock.status === 'won' ? lock.guesses.length - 1 : lock.guesses.length;
-  return Math.min(start + misses, start + MAX_ATTEMPTS - 1);
+  return Math.min(startHints + misses, startHints + attempts - 1);
 }
 
 /** Returns the lock with any newly earned hints added (same object when nothing changed). */

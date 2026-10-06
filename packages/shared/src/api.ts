@@ -1,10 +1,14 @@
 // HTTP contract between the web app and the server. Both sides import these types.
+import { MAX_ATTEMPTS } from './config.js';
 import type { DayKey } from './daily.js';
 import type { Pattern } from './types.js';
 
-/** Distribution buckets: index 0..5 = solved in 1..6 attempts, index 6 = failed (X). */
-export const DIST_BUCKETS = 7;
-export const FAILED_BUCKET = 6;
+/**
+ * Distribution buckets: index 0..MAX_ATTEMPTS-1 = solved in 1..MAX_ATTEMPTS attempts, the last
+ * one (FAILED_BUCKET) = failed (X). Locks with fewer attempts leave their extra buckets at 0.
+ */
+export const DIST_BUCKETS = MAX_ATTEMPTS + 1;
+export const FAILED_BUCKET = MAX_ATTEMPTS;
 
 /** POST /api/days/:date/results */
 export interface SubmitResultRequest {
@@ -35,7 +39,7 @@ export interface SubmitResultResponse {
 export interface DayStatsDto {
   date: DayKey;
   players: number;
-  /** Players who opened all three locks. */
+  /** Players who opened every lock. */
   allOpened: number;
   locks: { opened: number; distribution: number[] }[];
 }
@@ -43,7 +47,7 @@ export interface DayStatsDto {
 /** GET /api/players/:playerId/stats?today=YYYY-MM-DD */
 export interface PlayerStatsDto {
   played: number;
-  /** Days with all three locks opened. */
+  /** Days with every lock opened. */
   won: number;
   currentStreak: number;
   bestStreak: number;

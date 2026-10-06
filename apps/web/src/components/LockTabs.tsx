@@ -1,4 +1,4 @@
-import { LOCKS } from '@slockle/shared';
+import { LOCKS, scoreText } from '@slockle/shared';
 import type { LockState } from '../game/state';
 import { useI18n } from '../i18n/I18nProvider';
 
@@ -8,7 +8,7 @@ export function LockTabs({ locks, current }: { locks: LockState[]; current: numb
     <nav className="locks" aria-label={t('aria.locks')}>
       {LOCKS.map((c, i) => {
         const l = locks[i]!;
-        const detail = l.status === 'won' ? `${l.guesses.length}/6` : l.status === 'lost' ? 'X/6' : `${c.n}×${c.n}`;
+        const detail = l.status === 'playing' ? t('tab.dots', c.len) : scoreText(i, l.status, l.guesses.length);
         const cls = ['lock-pill', l.status !== 'playing' && l.status, i === current && 'current'].filter(Boolean).join(' ');
         return (
           <div key={i} className={cls}>

@@ -1,4 +1,4 @@
-import { LOCKS, dateKey, dayFromKey } from '@slockle/shared';
+import { LOCKS, dateKey, dayFromKey, scoreText } from '@slockle/shared';
 import { useMemo } from 'react';
 import { loadState } from '../game/state';
 import { useI18n, type I18n } from '../i18n/I18nProvider';
@@ -25,7 +25,7 @@ function dayStatus(t: I18n['t'], d: number): { cls: string; text: string } {
   const won = s.locks.filter((l) => l.status === 'won').length;
   return {
     cls: won === LOCKS.length ? 'won' : 'partial',
-    text: s.locks.map((l) => (l.status === 'won' ? `${l.guesses.length}/6` : 'X/6')).join('  '),
+    text: s.locks.map((l, i) => scoreText(i, l.status, l.guesses.length)).join('  '),
   };
 }
 

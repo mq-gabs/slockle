@@ -1,4 +1,4 @@
-import { LOCKS, shareText, type Pattern } from '@slockle/shared';
+import { LOCKS, scoreText, shareText, type Pattern } from '@slockle/shared';
 import { useEffect, useState } from 'react';
 import type { DayState } from '../game/state';
 import { useI18n } from '../i18n/I18nProvider';
@@ -36,7 +36,7 @@ export function ResultScreen({ state, answers, isArchive, notSaved, todayHref, o
             <div key={i} className="result-lock">
               <PatternGrid n={c.n} path={answers[i]} tone="answer" label={t('aria.lockAnswer', i + 1, describe(t, answers[i]!))} />
               <p className={l.status === 'won' ? undefined : 'lost'}>
-                {l.status === 'won' ? `${l.guesses.length}/6` : 'X/6'}
+                {scoreText(i, l.status, l.guesses.length)}
               </p>
             </div>
           );

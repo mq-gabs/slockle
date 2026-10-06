@@ -143,7 +143,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- lock tabs ---------- */
 
-.locks { display: flex; gap: 8px; margin: 14px 0 10px; }
+.locks { display: flex; gap: 6px; margin: 14px 0 10px; }
 
 .lock-pill {
   flex: 1;
@@ -290,7 +290,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .result { text-align: center; padding-top: 8px; }
 .result-title { margin: 6px 0 16px; }
-.result-locks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.result-locks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
 .result-lock .grid { border-radius: 10px; }
 .result-lock p { margin: 6px 0 0; font-weight: 600; }
 .result-lock p.lost { color: var(--muted); }
@@ -414,7 +414,7 @@ dialog .primary { display: block; margin: 12px auto 0; }
 }
 .dist-bar.hl { background: var(--accent); color: var(--accent-text); }
 
-.lock-dists { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.lock-dists { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
 .lock-dists h4 { margin: 0; font-size: 0.85rem; }
 .lock-dists .fine { margin: 0 0 6px; font-size: 0.75rem; }
 .lock-dists .you { margin: 2px 0; font-size: 0.75rem; font-weight: 600; }

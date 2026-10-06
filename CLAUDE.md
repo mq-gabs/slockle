@@ -1,6 +1,6 @@
 # Slockle
 
-A once-a-day browser puzzle (formerly "Daily Pattern Lock"): crack three hidden phone-style unlock patterns (3×3, 3×3, 4×4) with six attempts each, using colour feedback and hints. TypeScript monorepo: React front end, Express API, shared game logic.
+A once-a-day browser puzzle (formerly "Daily Pattern Lock"): crack four hidden phone-style unlock patterns on a 3×3 grid (3, 5, 7 and 9 dots) using colour feedback and hints. Each lock has six attempts except the 9-dot one, which has eight and starts with more hints. Locks are configured in `packages/shared/src/config.ts` (`LOCKS`: grid, length, attempts, starting hints, seed). TypeScript monorepo: React front end, Express API, shared game logic.
 
 ## Commands
 
@@ -27,7 +27,7 @@ packages/shared/   @slockle/shared: game rules used by both sides
   src/daily.ts       day numbers ↔ YYYY-MM-DD keys, seeded daily answer
   src/feedback.ts    green/yellow/gray marks
   src/hints.ts       hint specs, tiers, nextHint() selection rules
-  src/outcome.ts     lock outcome from guesses, checkGuesses() (server-side validation), emoji rows
+  src/outcome.ts     lock outcome from guesses, checkGuesses() (server-side validation), scoreText(), emoji rows
   src/share.ts       share text
   src/api.ts         HTTP request/response types (the contract between web and server)
 apps/server/       @slockle/server: Express 5
@@ -64,7 +64,7 @@ apps/web/          @slockle/web: Vite + React 19
 
 Errors are `{ error: code, details? }`. Types for all of these are in `packages/shared/src/api.ts`; change them there and both sides follow.
 
-Distributions are arrays of 7: index 0–5 = solved in 1–6 attempts, index 6 = failed (`FAILED_BUCKET`).
+Distributions are arrays of `DIST_BUCKETS` (`MAX_ATTEMPTS + 1`, currently 9): index k = solved in k+1 attempts, the last index = failed (`FAILED_BUCKET`). Locks with fewer attempts than `MAX_ATTEMPTS` leave the buckets past their limit at 0; the stats dialog hides them.
 
 ### Persistence
 
@@ -76,8 +76,9 @@ To add a real store (SQL, Redis, …): implement the interface in `apps/server/s
 
 - **Dots are 0-based internally** (index 0 is the dot shown as "1"), left to right, top to bottom. Only UI text adds 1.
 - **Day numbers vs keys.** Day 0 is `2026-10-05` (puzzle #1). Use `dateKey()`/`dayFromKey()`; `dayNumber()` is the player's local day, `utcDayNumber()` is for the server. Puzzles before the epoch have no number; the share text uses the date instead.
-- **Daily answers are seeded from lock seed + date**, so any date regenerates independently. Patterns can repeat across days. Changing a lock's `seed`, `len` or the quality filter in `lockSet()` changes every past and future answer and invalidates saved progress. The seeds (`pattern-lock-1…3`) keep the game's old name for this reason; don't rename them.
-- **Lock 3's list has 1,331,944 patterns** and takes ~250 ms to build. The server builds all lists at startup; the web app builds lazily behind a "Preparing…" message (`useDayGame`). Avoid calling `lockSet(2)`/`dailyAnswer(2, …)` during render.
+- **Daily answers are seeded from lock seed + date**, so any date regenerates independently. Patterns can repeat across days. Changing a lock's `seed`, `len` or the quality filter in `lockSet()` changes every past and future answer and invalidates saved progress. The seeds (`pattern-lock-…`) keep the game's old name for this reason; don't rename them. The 5- and 7-dot locks kept `pattern-lock-1`/`-2` when the line-up changed to four locks. The quality filter asks for at least two turns (one for 3-dot patterns, which can't turn twice).
+- **Per-lock attempts.** Use `LOCKS[i].attempts`, not `MAX_ATTEMPTS` (the largest of them, only for sizing distributions and request limits). Show scores with `scoreText()`. Saved day state whose lock count doesn't match `LOCKS` is discarded on load.
+- **Pattern lists are built lazily.** The 9-dot list has 140,704 patterns (a 4×4 lock would have over a million and take ~250 ms). The server builds all lists at startup; the web app builds them behind a "Preparing…" message (`useDayGame`). Avoid calling `lockSet()`/`dailyAnswer()` during render.
 - **Hints are data (`HintSpec`).** `nextHint()` picks them; the web app words them per language in `apps/web/src/i18n/hints.ts`. A new hint kind needs: the spec type in `shared/types.ts`, `hintTest()` and a tier in `shared/hints.ts`, and wording in every language.
 - **Translations:** `strings.ts` types `pt` (and any new language) as `Record<StringKey, …>`, so a missing key fails the typecheck. Add a language by adding its strings, its hint writer and an entry in `LANGS`. Portuguese uses "Padrão" for a lock and "ordem" for a step.
 - **Drawing:** the pointer reach is 0.25 dot spacings on purpose; larger values make some valid 4×4 moves impossible to draw straight. A line over an unused dot adds that dot (`skippedDots`), like a phone lock.
@@ -90,6 +91,6 @@ To add a real store (SQL, Redis, …): implement the interface in `apps/server/s
 
 ## Testing
 
-- `packages/shared/src/shared.test.ts`: pattern counts from the spec (7,152 / 72,912 / 1,331,944), feedback, dates, validation, hints, share text.
+- `packages/shared/src/shared.test.ts`: pattern counts from the spec (7,152 / 72,912 / 1,331,944 for 4×4 length 6) and each lock's list, feedback, dates, validation, hints, share text.
 - `apps/server/src/app.test.ts`: the HTTP API through supertest with an injected clock (`now`) and a fresh in-memory repository per test; also the repository contract.
 - The web app has no automated tests yet. Check UI changes in a browser at phone width (360–390 px) in both languages and both colour schemes.

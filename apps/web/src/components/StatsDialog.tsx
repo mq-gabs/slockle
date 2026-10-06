@@ -1,4 +1,4 @@
-import { FAILED_BUCKET, LOCKS, dateKey, type DayStatsDto, type PlayerStatsDto } from '@slockle/shared';
+import { FAILED_BUCKET, LOCKS, dateKey, scoreText, type DayStatsDto, type PlayerStatsDto } from '@slockle/shared';
 import { useEffect, useState, type CSSProperties } from 'react';
 import { getDayStats, getPlayerStats } from '../api/client';
 import type { DayState } from '../game/state';
@@ -59,8 +59,8 @@ export function StatsDialog({ open, onClose, playerId, today, todayState, versio
             <div className="stat-row" style={{ '--cols': LOCKS.length } as CSSProperties}>
               {LOCKS.map((_, i) => {
                 const l = todayState?.locks[i];
-                const value = l?.status === 'won' ? `${l.guesses.length}/6` : l?.status === 'lost' ? 'X/6' : '–';
-                return <Stat key={i} value={value} label={t('tab.lock', i + 1)} info={t('info.lock', i + 1)} />;
+                const value = !l || l.status === 'playing' ? '–' : scoreText(i, l.status, l.guesses.length);
+                return <Stat key={i} value={value} label={t('tab.lock', i + 1)} info={t('info.lock', i + 1, LOCKS[i]!.attempts)} />;
               })}
             </div>
           </section>
@@ -82,7 +82,7 @@ export function StatsDialog({ open, onClose, playerId, today, todayState, versio
                       {t('stats.opened', l.opened, data.day.players)}{' '}
                       <InfoTip label={t('stats.opened', l.opened, data.day.players)} text={t('info.lockOpened', i + 1)} />
                     </p>
-                    <Distribution values={l.distribution} highlight={highlight[i] === undefined ? [] : [highlight[i]]} />
+                    <Distribution attempts={LOCKS[i]!.attempts} values={l.distribution} highlight={highlight[i] === undefined ? [] : [highlight[i]]} />
                   </div>
                 ))}
               </div>
@@ -103,11 +103,13 @@ function Stat({ value, label, info }: { value: number | string; label: string; i
   );
 }
 
-function Distribution({ values, highlight }: { values: number[]; highlight: number[] }) {
+/** Rows 1..attempts and X; buckets past the lock's attempt limit are always empty, so they're left out. */
+function Distribution({ attempts, values, highlight }: { attempts: number; values: number[]; highlight: number[] }) {
   const max = Math.max(1, ...values);
+  const rows = values.map((v, k) => [v, k] as const).filter(([, k]) => k < attempts || k === FAILED_BUCKET);
   return (
     <div className="dist">
-      {values.map((v, k) => (
+      {rows.map(([v, k]) => (
         <div key={k} className="dist-row">
           <span>{k === FAILED_BUCKET ? 'X' : k + 1}</span>
           <div

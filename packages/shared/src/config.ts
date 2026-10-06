@@ -1,13 +1,16 @@
 import type { LockConfig } from './types.js';
 
 // The seeds still carry the game's original name on purpose: changing them changes every daily answer.
+// The 5- and 7-dot locks keep their old seeds so their answers didn't change when locks were added.
 export const LOCKS: readonly LockConfig[] = [
-  { n: 3, len: 5, startHints: 1, seed: 'pattern-lock-1' },
-  { n: 3, len: 7, startHints: 1, seed: 'pattern-lock-2' },
-  { n: 4, len: 6, startHints: 2, seed: 'pattern-lock-3' },
+  { n: 3, len: 3, attempts: 6, startHints: 1, seed: 'pattern-lock-0' },
+  { n: 3, len: 5, attempts: 6, startHints: 1, seed: 'pattern-lock-1' },
+  { n: 3, len: 7, attempts: 6, startHints: 1, seed: 'pattern-lock-2' },
+  { n: 3, len: 9, attempts: 8, startHints: 3, seed: 'pattern-lock-4' },
 ];
 
-export const MAX_ATTEMPTS = 6;
+/** Most attempts any lock allows. */
+export const MAX_ATTEMPTS = Math.max(...LOCKS.map((l) => l.attempts));
 
 /** Day 0, puzzle #1. */
 export const EPOCH_KEY = '2026-10-05';

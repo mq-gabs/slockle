@@ -31,8 +31,8 @@ export class StatsService {
   }
 
   /**
-   * `today` is the player's local date. The streak counts consecutive days with all three
-   * locks opened, ending today or yesterday; a missed day or a failed lock ends it.
+   * `today` is the player's local date. The streak counts consecutive days with every
+   * lock opened, ending today or yesterday; a missed day or a failed lock ends it.
    */
   async playerStats(playerId: string, today: DayKey): Promise<PlayerStatsDto> {
     const results = await this.repository.listByPlayer(playerId);

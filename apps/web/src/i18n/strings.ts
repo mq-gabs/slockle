@@ -41,6 +41,7 @@ const en = {
   'play.noHint': 'No new hint: your colors and hints already tell you more than another hint would.',
   'play.moreHints': 'Each miss unlocks another hint.',
   'tab.lock': (i: number) => `Lock ${i}`,
+  'tab.dots': (n: number) => `${n} dots`,
 
   'aria.answer': (dots: string) => `Answer: ${dots}`,
   'aria.lastGuess': (dots: string) => `Last guess: ${dots}. Drag to draw a new pattern.`,
@@ -48,7 +49,7 @@ const en = {
   'aria.guess': (k: number, dots: string) => `Guess ${k}: ${dots}`,
   'aria.lockAnswer': (i: number, dots: string) => `Lock ${i} answer: ${dots}`,
 
-  'result.allOpen': 'All three locks open!',
+  'result.allOpen': 'All four locks open!',
   'result.some': (w: number) => `${w} of 3 locks opened`,
   'result.share': 'Share result',
   'result.next': 'Next puzzle in',
@@ -61,7 +62,7 @@ const en = {
   'toast.failed': 'Could not copy',
 
   'help.title': 'How to play',
-  'help.intro': "Crack today's three hidden unlock patterns. Each lock gives you <strong>6 attempts</strong>.",
+  'help.intro': "Crack today's four hidden unlock patterns, of 3, 5, 7 and 9 dots. Each lock gives you <strong>6 attempts</strong>; the last one gives you <strong>8</strong> and more hints.",
   'help.rule1': 'Drag across the dots to draw a pattern. Dots are used once, and a line passing over an unused dot picks it up.',
   'help.rule2': 'Order matters: 1→2→5 and 5→2→1 are different patterns.',
   'help.rule3': "You know the number of dots. A guess of the wrong length doesn't cost an attempt.",
@@ -84,15 +85,15 @@ const en = {
   'stats.you': 'You',
   'stats.global': 'All players',
   'stats.players': 'Players',
-  'stats.allOpened': 'Opened all 3',
+  'stats.allOpened': 'Opened all 4',
   'info.played': "Daily puzzles you've finished: every lock opened or out of attempts. Past puzzles from the calendar don't count.",
-  'info.winRate': 'Share of played days where you opened all three locks. One failed lock makes the day a loss.',
-  'info.streak': 'Days in a row, up to today, where you opened all three locks. Missing a day or failing a lock resets it.',
-  'info.best': 'Your longest run of days in a row with all three locks opened.',
-  'info.lock': (i: number) =>
-    `Attempts you needed to open lock ${i} today, out of 6. X means you didn't open it; – means you haven't finished it yet.`,
+  'info.winRate': 'Share of played days where you opened all four locks. One failed lock makes the day a loss.',
+  'info.streak': 'Days in a row, up to today, where you opened all four locks. Missing a day or failing a lock resets it.',
+  'info.best': 'Your longest run of days in a row with all four locks opened.',
+  'info.lock': (i: number, max: number) =>
+    `Attempts you needed to open lock ${i} today, out of ${max}. X means you didn't open it; – means you haven't finished it yet.`,
   'info.players': "Players who finished today's puzzle.",
-  'info.allOpened': 'Players who opened all three locks today.',
+  'info.allOpened': 'Players who opened all four locks today.',
   'info.lockOpened': (i: number) =>
     `Players who opened lock ${i} today, out of everyone who finished. The bars show how many attempts they needed; X means they didn't open it. Your bar is highlighted.`,
   'stats.played': 'Played',
@@ -152,6 +153,7 @@ const pt: Strings = {
   'play.noHint': 'Sem dica nova: suas cores e dicas já dizem mais do que outra dica diria.',
   'play.moreHints': 'Cada erro libera uma nova dica.',
   'tab.lock': (i: number) => `Padrão ${i}`,
+  'tab.dots': (n: number) => `${n} pontos`,
 
   'aria.answer': (dots: string) => `Resposta: ${dots}`,
   'aria.lastGuess': (dots: string) => `Última tentativa: ${dots}. Arraste para desenhar um novo padrão.`,
@@ -159,7 +161,7 @@ const pt: Strings = {
   'aria.guess': (k: number, dots: string) => `Tentativa ${k}: ${dots}`,
   'aria.lockAnswer': (i: number, dots: string) => `Resposta do padrão ${i}: ${dots}`,
 
-  'result.allOpen': 'Os três padrões descobertos!',
+  'result.allOpen': 'Os quatro padrões descobertos!',
   'result.some': (w: number) => `${w} de 3 padrões descobertos`,
   'result.share': 'Compartilhar resultado',
   'result.next': 'Próximo desafio em',
@@ -172,7 +174,7 @@ const pt: Strings = {
   'toast.failed': 'Não foi possível copiar',
 
   'help.title': 'Como jogar',
-  'help.intro': 'Descubra os três padrões de desbloqueio escondidos de hoje. Cada padrão dá <strong>6 tentativas</strong>.',
+  'help.intro': 'Descubra os quatro padrões de desbloqueio escondidos de hoje, de 3, 5, 7 e 9 pontos. Cada padrão dá <strong>6 tentativas</strong>; o último dá <strong>8</strong> e mais dicas.',
   'help.rule1': 'Arraste pelos pontos para desenhar um padrão. Cada ponto é usado uma vez, e uma linha que passa por um ponto ainda não usado o inclui.',
   'help.rule2': 'A ordem importa: 1→2→5 e 5→2→1 são padrões diferentes.',
   'help.rule3': 'Você sabe quantos pontos o padrão tem. Uma tentativa com o número errado de pontos não conta.',
@@ -195,15 +197,15 @@ const pt: Strings = {
   'stats.you': 'Você',
   'stats.global': 'Todos os jogadores',
   'stats.players': 'Jogadores',
-  'stats.allOpened': 'Descobriram os 3',
+  'stats.allOpened': 'Descobriram os 4',
   'info.played': 'Desafios do dia que você terminou: cada padrão descoberto ou sem tentativas. Desafios anteriores do calendário não contam.',
-  'info.winRate': 'Porcentagem dos dias jogados em que você descobriu os três padrões. Um padrão não descoberto faz o dia contar como derrota.',
-  'info.streak': 'Dias seguidos, até hoje, em que você descobriu os três padrões. Perder um dia ou não descobrir um padrão zera a sequência.',
-  'info.best': 'Sua maior sequência de dias seguidos descobrindo os três padrões.',
-  'info.lock': (i: number) =>
-    `Tentativas que você usou para descobrir o padrão ${i} hoje, de 6. X significa que não descobriu; – que ainda não terminou.`,
+  'info.winRate': 'Porcentagem dos dias jogados em que você descobriu os quatro padrões. Um padrão não descoberto faz o dia contar como derrota.',
+  'info.streak': 'Dias seguidos, até hoje, em que você descobriu os quatro padrões. Perder um dia ou não descobrir um padrão zera a sequência.',
+  'info.best': 'Sua maior sequência de dias seguidos descobrindo os quatro padrões.',
+  'info.lock': (i: number, max: number) =>
+    `Tentativas que você usou para descobrir o padrão ${i} hoje, de ${max}. X significa que não descobriu; – que ainda não terminou.`,
   'info.players': 'Jogadores que terminaram o desafio de hoje.',
-  'info.allOpened': 'Jogadores que descobriram os três padrões hoje.',
+  'info.allOpened': 'Jogadores que descobriram os quatro padrões hoje.',
   'info.lockOpened': (i: number) =>
     `Jogadores que descobriram o padrão ${i} hoje, entre todos que terminaram. As barras mostram quantas tentativas usaram; X significa que não descobriram. A sua barra fica destacada.`,
   'stats.played': 'Jogos',

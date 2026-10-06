@@ -47,7 +47,7 @@ export class ResultService {
       const answer = dailyAnswer(i, day);
       const problem = checkGuesses(i, guesses, answer);
       if (problem) throw new DomainError(422, problem, `Lock ${i + 1} has guesses the game would not accept.`, { lock: i });
-      const outcome = lockOutcome(guesses, answer);
+      const outcome = lockOutcome(i, guesses, answer);
       if (outcome.status === 'playing') {
         throw new DomainError(422, 'lock-unfinished', `Lock ${i + 1} is not finished.`, { lock: i });
       }

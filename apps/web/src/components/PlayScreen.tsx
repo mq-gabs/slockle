@@ -1,4 +1,4 @@
-import { LOCKS, MAX_ATTEMPTS, Mark, feedback, type Pattern } from '@slockle/shared';
+import { LOCKS, Mark, feedback, type Pattern } from '@slockle/shared';
 import { useEffect, useState } from 'react';
 import type { LockState } from '../game/state';
 import type { GuessOutcome } from '../game/useDayGame';
@@ -27,7 +27,7 @@ export function describe(t: I18n['t'], path: Pattern, marks?: Mark[]): string {
 
 export function PlayScreen({ lockIndex, lock, answer, preparing, onGuess, onNext }: PlayScreenProps) {
   const { t, hintText } = useI18n();
-  const { n, len } = LOCKS[lockIndex]!;
+  const { n, len, attempts } = LOCKS[lockIndex]!;
   const [message, setMessage] = useState<Message>(null);
   const [shake, setShake] = useState(0);
   const [newestHint, setNewestHint] = useState(-1);
@@ -71,7 +71,7 @@ export function PlayScreen({ lockIndex, lock, answer, preparing, onGuess, onNext
     label = t('aria.lastGuess', describe(t, last, marks));
   }
 
-  const left = MAX_ATTEMPTS - lock.guesses.length;
+  const left = attempts - lock.guesses.length;
   // Show "no new hint" once, however many slots ran out.
   const hints = lock.hints.filter((h, k) => !(h.k === 'none' && lock.hints[k - 1]?.k === 'none'));
 
@@ -133,7 +133,7 @@ export function PlayScreen({ lockIndex, lock, answer, preparing, onGuess, onNext
               {h.k === 'none' ? t('play.noHint') : hintText(h, n)}
             </li>
           ))}
-          {lock.status === 'playing' && lock.guesses.length < MAX_ATTEMPTS - 1 && (
+          {lock.status === 'playing' && lock.guesses.length < attempts - 1 && (
             <li className="locked">{t('play.moreHints')}</li>
           )}
         </ol>

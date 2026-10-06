@@ -52,8 +52,8 @@ export interface LockSet {
 const setCache = new Map<number, LockSet>();
 
 /**
- * Full pattern list for a lock plus its answer pool. Lock 3 has 1.3M patterns and takes a
- * few hundred milliseconds to build, so the result is cached.
+ * Full pattern list for a lock plus its answer pool. A 4×4 lock can have over a million
+ * patterns and take a few hundred milliseconds to build, so the result is cached.
  */
 export function lockSet(lockIndex: number): LockSet {
   const cached = setCache.get(lockIndex);
@@ -61,10 +61,12 @@ export function lockSet(lockIndex: number): LockSet {
   const cfg = LOCKS[lockIndex];
   if (!cfg) throw new RangeError(`No lock ${lockIndex}`);
   const all = enumerate(cfg.n, cfg.len);
+  const minTurns = Math.min(2, cfg.len - 2);
   const pool: number[] = [];
   for (let i = 0; i < all.count; i++) {
-    // Quality filter: at least two turns (which also rules out straight lines).
-    if (countTurns(cfg.n, all.data.subarray(i * cfg.len, (i + 1) * cfg.len)) >= 2) pool.push(i);
+    // Quality filter: at least two turns (which also rules out straight lines). A 3-dot pattern
+    // can only turn once, so it just has to bend.
+    if (countTurns(cfg.n, all.data.subarray(i * cfg.len, (i + 1) * cfg.len)) >= minTurns) pool.push(i);
   }
   const result = { cfg, all, pool: Uint32Array.from(pool) };
   setCache.set(lockIndex, result);

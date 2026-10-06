@@ -1,4 +1,4 @@
-import { LOCKS, MAX_ATTEMPTS, type Pattern } from '@slockle/shared';
+import { LOCKS, type Pattern } from '@slockle/shared';
 import { useCallback, useEffect, useState } from 'react';
 import { answerFor, isLockReady, loadState, saveState, withHints, type DayState, type LockState } from './state';
 
@@ -18,7 +18,7 @@ export function useDayGame(day: number) {
   const neededKey = needed.join();
   const preparing = needed.some((i) => !isLockReady(i));
 
-  // Building lock 3's list blocks for a moment; defer it so "Preparing…" renders first.
+  // Building a long lock's list blocks for a moment; defer it so "Preparing…" renders first.
   useEffect(() => {
     if (!preparing) return;
     const timer = setTimeout(() => {
@@ -42,14 +42,14 @@ export function useDayGame(day: number) {
 
   const guess = useCallback((path: Pattern): GuessOutcome => {
     const i = state.current;
-    const { len } = LOCKS[i]!;
+    const { len, attempts } = LOCKS[i]!;
     const lock = state.locks[i]!;
     if (path.length !== len) return { kind: 'wrong-length', len, got: path.length };
     if (lock.guesses.some((g) => g.join() === path.join())) return { kind: 'repeat' };
 
     const guesses = [...lock.guesses, path];
     const solved = path.join() === answerFor(i, day).join();
-    const status = solved ? 'won' : guesses.length >= MAX_ATTEMPTS ? 'lost' : 'playing';
+    const status = solved ? 'won' : guesses.length >= attempts ? 'lost' : 'playing';
     let next: LockState = { ...lock, guesses, status };
     if (status === 'playing') next = withHints(i, day, next);
     setState((s) => ({ ...s, locks: s.locks.map((l, k) => (k === i ? next : l)) }));

@@ -8,6 +8,8 @@ export interface LockConfig {
   n: GridSize;
   /** Number of dots in the answer. */
   len: number;
+  /** Guesses allowed before the lock is lost. */
+  attempts: number;
   /** Hints shown before the first guess. */
   startHints: number;
   /** Seed prefix; combined with the date to pick the day's pattern. */

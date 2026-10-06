@@ -26,9 +26,9 @@ function misses(lock: number, day: number, count: number): Pattern[] {
   return out;
 }
 
-/** attempts: 1–6 to solve on that guess, or 'X' to fail. */
+/** attempts: solve on that guess (1 up to the lock's limit), or 'X' to fail. */
 function lock(i: number, day: number, attempts: number | 'X') {
-  if (attempts === 'X') return { guesses: misses(i, day, 6) };
+  if (attempts === 'X') return { guesses: misses(i, day, LOCKS[i]!.attempts) };
   return { guesses: [...misses(i, day, attempts - 1), dailyAnswer(i, day)] };
 }
 
@@ -39,37 +39,45 @@ const submit = (day: number, playerId: string, scores: (number | 'X')[]) =>
 
 describe('POST /api/days/:date/results', () => {
   it('scores the guesses and stores the result once', async () => {
-    const first = await submit(0, 'player-aaaa', [2, 1, 'X']);
+    const first = await submit(0, 'player-aaaa', [2, 1, 'X', 'X']);
     expect(first.status).toBe(201);
     expect(first.body.result).toMatchObject({
       date: '2026-10-05',
-      locks: [{ status: 'won', attempts: 2 }, { status: 'won', attempts: 1 }, { status: 'lost', attempts: 6 }],
+      locks: [
+        { status: 'won', attempts: 2 }, { status: 'won', attempts: 1 },
+        { status: 'lost', attempts: 6 }, { status: 'lost', attempts: 8 },
+      ],
       allOpened: false,
     });
 
-    const again = await submit(0, 'player-aaaa', [1, 1, 1]);
+    const again = await submit(0, 'player-aaaa', [1, 1, 1, 1]);
     expect(again.status).toBe(409);
     expect(again.body.result.locks[2].status).toBe('lost'); // the first submission stands
   });
 
   it('accepts the neighbouring UTC days, for other time zones, but not older puzzles', async () => {
-    expect((await submit(1, 'player-aaaa', [1, 1, 1])).status).toBe(201);
-    expect((await submit(-1, 'player-aaaa', [1, 1, 1])).status).toBe(201);
-    const old = await submit(-2, 'player-aaaa', [1, 1, 1]);
+    expect((await submit(1, 'player-aaaa', [1, 1, 1, 1])).status).toBe(201);
+    expect((await submit(-1, 'player-aaaa', [1, 1, 1, 1])).status).toBe(201);
+    const old = await submit(-2, 'player-aaaa', [1, 1, 1, 1]);
     expect(old.status).toBe(422);
     expect(old.body.error).toBe('date-not-current');
   });
 
   it('rejects unfinished locks and guesses the game would not accept', async () => {
     const unfinished = await request(app).post('/api/days/2026-10-05/results')
-      .send({ playerId: 'player-aaaa', locks: [lock(0, 0, 1), lock(1, 0, 1), { guesses: misses(2, 0, 2) }] });
+      .send({ playerId: 'player-aaaa', locks: [lock(0, 0, 1), lock(1, 0, 1), lock(2, 0, 1), { guesses: misses(3, 0, 6) }] });
     expect(unfinished.status).toBe(422);
-    expect(unfinished.body).toEqual({ error: 'lock-unfinished', details: { lock: 2 } });
+    expect(unfinished.body).toEqual({ error: 'lock-unfinished', details: { lock: 3 } });
 
     const jump = await request(app).post('/api/days/2026-10-05/results')
-      .send({ playerId: 'player-aaaa', locks: [{ guesses: [[0, 2, 1, 4, 5]] }, lock(1, 0, 1), lock(2, 0, 1)] });
+      .send({ playerId: 'player-aaaa', locks: [lock(0, 0, 1), { guesses: [[0, 2, 1, 4, 5]] }, lock(2, 0, 1), lock(3, 0, 1)] });
     expect(jump.status).toBe(422);
     expect(jump.body.error).toBe('invalid-pattern');
+
+    const tooMany = await request(app).post('/api/days/2026-10-05/results')
+      .send({ playerId: 'player-aaaa', locks: [lock(0, 0, 1), lock(1, 0, 1), { guesses: misses(2, 0, 7) }, lock(3, 0, 1)] });
+    expect(tooMany.status).toBe(422);
+    expect(tooMany.body.error).toBe('too-many-guesses');
   });
 
   it('rejects malformed requests', async () => {
@@ -85,14 +93,15 @@ describe('POST /api/days/:date/results', () => {
 
 describe('GET /api/days/:date/stats', () => {
   it('aggregates every player for the day', async () => {
-    await submit(0, 'player-aaaa', [2, 1, 3]);
-    await submit(0, 'player-bbbb', [2, 'X', 6]);
+    await submit(0, 'player-aaaa', [2, 1, 3, 8]);
+    await submit(0, 'player-bbbb', [2, 'X', 6, 'X']);
     const res = await request(app).get('/api/days/2026-10-05/stats');
     expect(res.status).toBe(200);
     expect(res.body.players).toBe(2);
     expect(res.body.allOpened).toBe(1);
-    expect(res.body.locks[0]).toEqual({ opened: 2, distribution: [0, 2, 0, 0, 0, 0, 0] });
-    expect(res.body.locks[1]).toEqual({ opened: 1, distribution: [1, 0, 0, 0, 0, 0, 1] });
+    expect(res.body.locks[0]).toEqual({ opened: 2, distribution: [0, 2, 0, 0, 0, 0, 0, 0, 0] });
+    expect(res.body.locks[1]).toEqual({ opened: 1, distribution: [1, 0, 0, 0, 0, 0, 0, 0, 1] });
+    expect(res.body.locks[3]).toEqual({ opened: 1, distribution: [0, 0, 0, 0, 0, 0, 0, 1, 1] });
     expect(res.body.locks).toHaveLength(LOCKS.length);
   });
 
@@ -104,7 +113,7 @@ describe('GET /api/days/:date/stats', () => {
 
 describe('GET /api/players/:playerId/stats', () => {
   it('tracks played, wins, streaks and the per-lock distribution', async () => {
-    for (const [day, scores] of [[0, [1, 2, 3]], [1, [1, 1, 'X']], [2, [2, 2, 2]], [3, [3, 3, 3]]] as const) {
+    for (const [day, scores] of [[0, [1, 2, 3, 7]], [1, [1, 1, 'X', 1]], [2, [2, 2, 2, 2]], [3, [3, 3, 3, 3]]] as const) {
       today = day;
       expect((await submit(day, 'player-aaaa', [...scores])).status).toBe(201);
     }
@@ -114,7 +123,7 @@ describe('GET /api/players/:playerId/stats', () => {
       won: 3,
       currentStreak: 2, // days 2 and 3; the failed lock on day 1 broke the first run
       bestStreak: 2,
-      distribution: [3, 4, 4, 0, 0, 0, 1],
+      distribution: [4, 5, 5, 0, 0, 0, 1, 0, 1],
       lastPlayed: '2026-10-08',
     });
 
